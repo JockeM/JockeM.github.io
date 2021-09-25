@@ -6,9 +6,6 @@
   <main>
     <Window id="terminal"></Window>
   </main>
-  <div>
-    
-  </div>
 </template>
 
 <style>

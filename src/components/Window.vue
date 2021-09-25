@@ -1,17 +1,25 @@
 <script setup lang="ts">
+  import { useDraggable } from '@vueuse/core';
+  import { ref } from 'vue';
 
+  const draggableElement = ref<HTMLElement | null>(null);
+
+  const { x, y, style } = useDraggable(draggableElement, {
+    initialValue: { x: 40, y: 40 },
+  });
 </script>
 
 <template>
-  <div class="terminal">
-    <div class="header">
+  <div class="terminal" :style="style">
+    <header class="header" ref="draggableElement">
       <div class="tabs">
+        <div class="tabs-prefix-before"></div>
         <div class="tab">
-          <img src="../assets/icon_temp.png"/>
+          <img src="../assets/icon_temp.png" />
           <h2>PowerShell</h2>
           <button class="tab-close"><img src="../assets/close.png" /></button>
         </div>
-
+        <div class="tabs-prefix-after"></div>
       </div>
       <div class="tab-actions">
         <button>+</button>
@@ -23,20 +31,18 @@
         <button><img src="../assets/maximize.png" /></button>
         <button class="close"><img src="../assets/close.png" /></button>
       </div>
-    </div>
-    <div class="terminal-body">
-        
-    </div>
+    </header>
+    <div class="terminal-body"></div>
   </div>
 </template>
 
 <style scoped>
-  .tabs  {
-    margin-left: 8px
+  .tabs {
+    display: flex;
   }
 
   .tab {
-    height:32px;
+    height: 32px;
     margin-top: 4px;
     width: 224px;
     background-color: #000000;
@@ -44,8 +50,32 @@
 
     padding: 0 8px;
 
-    display:flex;
+    display: flex;
     align-items: center;
+  }
+
+  .tabs-prefix-before,
+  .tabs-prefix-after {
+    width: 8px;
+    height: 100%;
+    background-color: black;
+  }
+
+  .tabs-prefix-before::after,
+  .tabs-prefix-after::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: #333333;
+  }
+
+  .tabs-prefix-after::after {
+    border-bottom-left-radius: 4px;
+  }
+
+  .tabs-prefix-before::after {
+    border-bottom-right-radius: 4px;
   }
 
   .tab > h2 {
@@ -61,7 +91,7 @@
     height: 16px;
     border-radius: 3px;
   }
-  
+
   .tab > button > img {
     opacity: 0.5;
   }
@@ -69,11 +99,11 @@
   .tab-actions {
     margin-left: 8px;
     margin-top: 4px;
-    display:flex;
+    display: flex;
   }
 
   .tab-actions > button {
-    width:32px;
+    width: 32px;
     color: rgb(180, 180, 180);
   }
 
@@ -81,12 +111,12 @@
     border-top-left-radius: 5px;
   }
 
-    .tab-actions > button:last-of-type {
+  .tab-actions > button:last-of-type {
     border-top-right-radius: 5px;
   }
 
   .window-actions {
-    display:flex;
+    display: flex;
   }
 
   .terminal {
@@ -95,8 +125,9 @@
     background-color: #1f1f1f;
     width: 800px;
     height: 450px;
+    position: fixed;
   }
-  
+
   .space {
     flex: 1;
   }
@@ -111,25 +142,27 @@
   button {
     border: none;
     background: transparent;
-    display:flex;
+    display: flex;
     justify-content: center;
     align-items: center;
-
-    border: none;
-    background: transparent;
-    transition: 250ms;
   }
 
   .tab-actions > button:hover {
-    background-color: #1F1F1F;
+    background-color: #1f1f1f;
   }
 
-  .window-actions > button:hover, .tab-close:hover {
+  .window-actions > button:hover,
+  .tab-close:hover {
     background-color: #5c5c5c;
   }
 
-  .window-actions > .close:hover {
-    background-color: #E81123;
+  .window-actions > button {
+    width: 46px;
+    transition: 150ms;
+  }
 
+  .window-actions > .close:hover {
+    background-color: #e81123;
+    transition: 0;
   }
 </style>

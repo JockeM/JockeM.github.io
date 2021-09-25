@@ -1,10 +1,11 @@
 <script setup lang="ts">
   import Window from './components/Window.vue';
+  import ResizableWrapper from './components/ResizableWrapper.vue';
 </script>
 
 <template>
   <main>
-    <Window id="terminal"></Window>
+    <ResizableWrapper class="wrapper"> </ResizableWrapper>
   </main>
 </template>
 
@@ -21,9 +22,6 @@
   main {
     width: 100%;
     height: 100%;
-
-    display: flex;
-    justify-content: center;
   }
 
   html,

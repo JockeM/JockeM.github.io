@@ -2,57 +2,86 @@
   import { useEventListener, useMouseInElement } from '@vueuse/core';
   import { reactive, ref, watch } from 'vue';
 
-  const el = ref<HTMLElement | null>(null);
-  const { x, y } = useMouseInElement(el);
-
   const style = reactive({
     width: 300,
     height: 300,
     'margin-left': 100,
+    'margin-top': 100,
   });
 
-  const dragging = ref(false);
+  const drag = ref({
+    n: false,
+    e: false,
+    w: false,
+    s: false,
+  });
+
   useEventListener('mouseup', (ev) => {
-    dragging.value = false;
+    drag.value = {
+      n: false,
+      e: false,
+      w: false,
+      s: false,
+    };
   });
 
-  const startDrag = () => {
-    dragging.value = true;
-  };
+  const el = ref<HTMLElement | null>(null);
+  const { x, y } = useMouseInElement(el);
 
   watch([x, y] as const, ([x, y]) => {
-    if (dragging.value) {
-      const width = style.width;
+    if (drag.value.w) {
       const delta = x - style['margin-left'];
+      style.width -= delta;
 
       style['margin-left'] = x;
-      style.width = width - delta;
+    } else if (drag.value.e) {
+      style.width = x - style['margin-left'];
+    }
+
+    if (drag.value.n) {
+      const delta = y - style['margin-top'];
+      style.height -= delta;
+
+      style['margin-top'] = y;
+    } else if (drag.value.s) {
+      style.height = y - style['margin-top'];
     }
   });
 
-  //const zones = ['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se'];
+  const click = ({ n = false, w = false, e = false, s = false }) => {
+    if (n) {
+      drag.value.n = true;
+    } else if (s) {
+      drag.value.s = true;
+    }
+
+    if (w) {
+      drag.value.w = true;
+    } else if (e) {
+      drag.value.e = true;
+    }
+  };
 </script>
 
 <template>
   <div ref="el" class="main" :style="style">
-    <div class="b nw"></div>
-    <div class="b n"></div>
-    <div class="b ne"></div>
-    <div @mousedown="startDrag" class="b w"></div>
+    <div @mousedown="click({ n: true, w: true })" class="b nw"></div>
+    <div @mousedown="click({ n: true })" class="b n"></div>
+    <div @mousedown="click({ n: true, e: true })" class="b ne"></div>
+    <div @mousedown="click({ w: true })" class="b w"></div>
     <div class="center"><slot></slot></div>
-    <div class="b e"></div>
-    <div class="b sw"></div>
-    <div class="b s"></div>
-    <div class="b se"></div>
+    <div @mousedown="click({ e: true })" class="b e"></div>
+    <div @mousedown="click({ s: true, w: true })" class="b sw"></div>
+    <div @mousedown="click({ s: true })" class="b s"></div>
+    <div @mousedown="click({ s: true, e: true })" class="b se"></div>
   </div>
 </template>
 
 <style scoped>
   .main {
     --size: 6px;
-    border: 1px red solid;
     display: grid;
-    position: fixed;
+    position: absolute;
     grid-template-columns: 1fr 100fr 1fr;
     grid-template-rows: 1fr 100fr 1fr;
   }

@@ -1,42 +1,51 @@
 <script setup lang="ts">
   import { useDraggable } from '@vueuse/core';
   import { ref } from 'vue';
+  import ResizableWrapper from './ResizableWrapper.vue';
 
   const draggableElement = ref<HTMLElement | null>(null);
-
-  const { x, y, style } = useDraggable(draggableElement, {
-    initialValue: { x: 40, y: 40 },
-  });
+  const { position } = useDraggable(draggableElement);
 </script>
 
 <template>
-  <div class="terminal" :style="style">
-    <header class="header" ref="draggableElement">
-      <div class="tabs">
-        <div class="tabs-prefix-before"></div>
-        <div class="tab">
-          <img src="../assets/icon_temp.png" />
-          <h2>PowerShell</h2>
-          <button class="tab-close"><img src="../assets/close.png" /></button>
+  <ResizableWrapper :position="position" class="wrapper">
+    <div class="terminal">
+      <header class="header" ref="draggableElement">
+        <div class="tabs">
+          <div class="tabs-prefix-before"></div>
+          <div class="tab">
+            <img src="../assets/icon_temp.png" />
+            <h2>PowerShell</h2>
+            <button class="tab-close"><img src="../assets/close.png" /></button>
+          </div>
+          <div class="tabs-prefix-after"></div>
         </div>
-        <div class="tabs-prefix-after"></div>
-      </div>
-      <div class="tab-actions">
-        <button>+</button>
-        <button>v</button>
-      </div>
-      <div class="space"></div>
-      <div class="window-actions">
-        <button><img src="../assets/minimize.png" /></button>
-        <button><img src="../assets/maximize.png" /></button>
-        <button class="close"><img src="../assets/close.png" /></button>
-      </div>
-    </header>
-    <div class="terminal-body"></div>
-  </div>
+        <div class="tab-actions">
+          <button>+</button>
+          <button>v</button>
+        </div>
+        <div class="space"></div>
+        <div class="window-actions">
+          <button><img src="../assets/minimize.png" /></button>
+          <button><img src="../assets/maximize.png" /></button>
+          <button class="close"><img src="../assets/close.png" /></button>
+        </div>
+      </header>
+      <div class="terminal-body"></div>
+    </div>
+  </ResizableWrapper>
 </template>
 
 <style scoped>
+  .terminal {
+    border: solid 1px #1883d7;
+    box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.2);
+    background-color: #1f1f1f;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
+
   .tabs {
     display: flex;
   }
@@ -117,15 +126,6 @@
 
   .window-actions {
     display: flex;
-  }
-
-  .terminal {
-    border: solid 1px #1883d7;
-    box-shadow: 0 0 12px 4px rgba(0, 0, 0, 0.2);
-    background-color: #1f1f1f;
-    width: 800px;
-    height: 450px;
-    position: fixed;
   }
 
   .space {

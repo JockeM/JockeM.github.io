@@ -1,11 +1,10 @@
 <script setup lang="ts">
   import Window from './components/Window.vue';
-  import ResizableWrapper from './components/ResizableWrapper.vue';
 </script>
 
 <template>
   <main>
-    <ResizableWrapper class="wrapper"> </ResizableWrapper>
+    <Window></Window>
   </main>
 </template>
 

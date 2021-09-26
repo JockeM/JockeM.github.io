@@ -1,12 +1,33 @@
 <script setup lang="ts">
-  import { useEventListener, useMouseInElement } from '@vueuse/core';
-  import { reactive, ref, watch } from 'vue';
+  import {
+    Position,
+    useEventListener,
+    useMouse,
+    useMouseInElement,
+  } from '@vueuse/core';
+  import { computed, reactive, ref, watch } from 'vue';
 
-  const style = reactive({
+  const props = defineProps<{
+    position: Position;
+  }>();
+
+  const left = ref(0);
+  const top = ref(0);
+
+  const dstyle = reactive({
     width: 300,
     height: 300,
-    'margin-left': 100,
-    'margin-top': 100,
+    left: 100,
+    top: 100,
+  });
+
+  const computedStyle = computed(() => {
+    return {
+      left: left.value + props.position.x,
+      top: top.value + props.position.y,
+      width: dstyle.width,
+      height: dstyle.height,
+    };
   });
 
   const drag = ref({
@@ -16,37 +37,77 @@
     s: false,
   });
 
-  useEventListener('mouseup', (ev) => {
-    drag.value = {
+  const clearDrag = () =>
+    (drag.value = {
       n: false,
       e: false,
       w: false,
       s: false,
-    };
-  });
+    });
+
+  useEventListener('mouseup', clearDrag);
+  useEventListener('dragend', clearDrag);
 
   const el = ref<HTMLElement | null>(null);
-  const { x, y } = useMouseInElement(el);
+  const {
+    elementX,
+    elementY,
+    elementPositionX,
+    elementPositionY,
+    elementWidth,
+    elementHeight,
+  } = useMouseInElement(el);
 
-  watch([x, y] as const, ([x, y]) => {
-    if (drag.value.w) {
-      const delta = x - style['margin-left'];
-      style.width -= delta;
+  watch(
+    [
+      elementX,
+      elementY,
+      elementPositionX,
+      elementPositionY,
+      elementWidth,
+      elementHeight,
+    ] as const,
+    ([
+      elementX,
+      elementY,
+      elementPositionX,
+      elementPositionY,
+      elementWidth,
+      elementHeight,
+    ]) => {
+      if (drag.value.w) {
+      } else if (drag.value.e) {
+        dstyle.width = elementX;
+      }
 
-      style['margin-left'] = x;
-    } else if (drag.value.e) {
-      style.width = x - style['margin-left'];
+      if (drag.value.n) {
+        //up
+      } else if (drag.value.s) {
+        //down
+        dstyle.height = elementY;
+      }
     }
+  );
 
-    if (drag.value.n) {
-      const delta = y - style['margin-top'];
-      style.height -= delta;
-
-      style['margin-top'] = y;
-    } else if (drag.value.s) {
-      style.height = y - style['margin-top'];
-    }
-  });
+  //watch([x, y] as const, ([x, y]) => {
+  //  if (drag.value.w) {
+  //    const delta = x - style.left;
+  //    style.width -= delta;
+  //
+  //    style.left = x;
+  //  } else if (drag.value.e) {
+  //    style.width = x - style.left;
+  //  }
+  //
+  //  if (drag.value.n) {
+  //    const delta = y - style.top;
+  //    style.height -= delta;
+  //
+  //    style.top = y;
+  //  } else if (drag.value.s) {
+  //    style.height = y - style.top;
+  //  }
+  //});
 
   const click = ({ n = false, w = false, e = false, s = false }) => {
     if (n) {
@@ -64,7 +125,7 @@
 </script>
 
 <template>
-  <div ref="el" class="main" :style="style">
+  <div ref="el" class="main" :style="computedStyle">
     <div @mousedown="click({ n: true, w: true })" class="b nw"></div>
     <div @mousedown="click({ n: true })" class="b n"></div>
     <div @mousedown="click({ n: true, e: true })" class="b ne"></div>
@@ -94,7 +155,6 @@
     flex: 0;
     min-width: var(--size);
     min-height: var(--size);
-    background-color: rgba(0, 255, 150, 0.5);
   }
 
   .e {

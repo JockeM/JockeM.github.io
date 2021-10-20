@@ -8,26 +8,19 @@
   import { computed, reactive, ref, watch } from 'vue';
 
   const props = defineProps<{
-    position: Position;
+    dragging: boolean;
   }>();
 
-  const left = ref(0);
-  const top = ref(0);
-
-  const dstyle = reactive({
-    width: 300,
-    height: 300,
-    left: 100,
-    top: 100,
+  const startDraggingPosition = reactive({
+    x: 0,
+    y: 0,
   });
 
-  const computedStyle = computed(() => {
-    return {
-      left: left.value + props.position.x,
-      top: top.value + props.position.y,
-      width: dstyle.width,
-      height: dstyle.height,
-    };
+  const style = reactive({
+    left: 0,
+    top: 0,
+    width: 800,
+    height: 500,
   });
 
   const drag = ref({
@@ -37,77 +30,45 @@
     s: false,
   });
 
-  const clearDrag = () =>
-    (drag.value = {
+  const clearDrag = () => {
+    return (drag.value = {
       n: false,
       e: false,
       w: false,
       s: false,
     });
+  };
 
   useEventListener('mouseup', clearDrag);
   useEventListener('dragend', clearDrag);
 
-  const el = ref<HTMLElement | null>(null);
-  const {
-    elementX,
-    elementY,
-    elementPositionX,
-    elementPositionY,
-    elementWidth,
-    elementHeight,
-  } = useMouseInElement(el);
+  const { x, y } = useMouse();
 
-  watch(
-    [
-      elementX,
-      elementY,
-      elementPositionX,
-      elementPositionY,
-      elementWidth,
-      elementHeight,
-    ] as const,
-    ([
-      elementX,
-      elementY,
-      elementPositionX,
-      elementPositionY,
-      elementWidth,
-      elementHeight,
-    ]) => {
-      if (drag.value.w) {
-      } else if (drag.value.e) {
-        dstyle.width = elementX;
-      }
-
-      if (drag.value.n) {
-        //up
-      } else if (drag.value.s) {
-        //down
-        dstyle.height = elementY;
-      }
+  watch([x, y] as const, ([x, y], [prev_x, prev_y]) => {
+    if (props.dragging === true) {
+      style.left += x - prev_x;
+      style.top += y - prev_y;
+      clearDrag();
     }
-  );
 
-  //watch([x, y] as const, ([x, y]) => {
-  //  if (drag.value.w) {
-  //    const delta = x - style.left;
-  //    style.width -= delta;
-  //
-  //    style.left = x;
-  //  } else if (drag.value.e) {
-  //    style.width = x - style.left;
-  //  }
-  //
-  //  if (drag.value.n) {
-  //    const delta = y - style.top;
-  //    style.height -= delta;
-  //
-  //    style.top = y;
-  //  } else if (drag.value.s) {
-  //    style.height = y - style.top;
-  //  }
-  //});
+    if (drag.value.w) {
+      const delta = x - style.left;
+      style.width -= delta;
+
+      style.left = x;
+    } else if (drag.value.e) {
+      style.width = x - style.left;
+    }
+
+    if (drag.value.n) {
+      const delta = y - style.top;
+      style.height -= delta;
+
+      style.top = y;
+    } else if (drag.value.s) {
+      style.height = y - style.top;
+    }
+  });
 
   const click = ({ n = false, w = false, e = false, s = false }) => {
     if (n) {
@@ -125,7 +86,7 @@
 </script>
 
 <template>
-  <div ref="el" class="main" :style="computedStyle">
+  <div class="main" :style="style">
     <div @mousedown="click({ n: true, w: true })" class="b nw"></div>
     <div @mousedown="click({ n: true })" class="b n"></div>
     <div @mousedown="click({ n: true, e: true })" class="b ne"></div>
@@ -143,8 +104,8 @@
     --size: 6px;
     display: grid;
     position: absolute;
-    grid-template-columns: 1fr 100fr 1fr;
-    grid-template-rows: 1fr 100fr 1fr;
+    grid-template-columns: 6px 1fr 6px;
+    grid-template-rows: 6px 1fr 6px;
   }
 
   .center {
@@ -153,8 +114,6 @@
 
   .main .b {
     flex: 0;
-    min-width: var(--size);
-    min-height: var(--size);
   }
 
   .e {

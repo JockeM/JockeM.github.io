@@ -1,16 +1,15 @@
 <script setup lang="ts">
-  import Window from './components/Window.vue';
+  import Terminal from './components/Terminal.vue';
 </script>
 
 <template>
   <main>
-    <Window></Window>
+    <Terminal />
   </main>
 </template>
 
 <style>
   #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;

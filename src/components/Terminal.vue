@@ -1,16 +1,22 @@
 <script setup lang="ts">
-  import { useDraggable } from '@vueuse/core';
-  import { ref } from 'vue';
+  import { useEventListener, useMousePressed } from '@vueuse/core';
+  import { ref, watch } from 'vue';
   import ResizableWrapper from './ResizableWrapper.vue';
+  import TerminalContent from './TerminalContent.vue';
 
-  const draggableElement = ref<HTMLElement | null>(null);
-  const { position } = useDraggable(draggableElement);
+  const dragging = ref(false);
+  useEventListener('mouseup', () => (dragging.value = false));
+  useEventListener('dragend', () => (dragging.value = false));
 </script>
 
 <template>
-  <ResizableWrapper :position="position" class="wrapper">
+  <ResizableWrapper :dragging="dragging" class="wrapper">
     <div class="terminal">
-      <header class="header" ref="draggableElement">
+      <header
+        class="header"
+        @mousedown="dragging = true"
+        ref="draggableElement"
+      >
         <div class="tabs">
           <div class="tabs-prefix-before"></div>
           <div class="tab">
@@ -31,7 +37,9 @@
           <button class="close"><img src="../assets/close.png" /></button>
         </div>
       </header>
-      <div class="terminal-body"></div>
+      <div class="terminal-body">
+        <TerminalContent />
+      </div>
     </div>
   </ResizableWrapper>
 </template>

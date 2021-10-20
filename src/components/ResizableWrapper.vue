@@ -1,24 +1,14 @@
 <script setup lang="ts">
-  import {
-    Position,
-    useEventListener,
-    useMouse,
-    useMouseInElement,
-  } from '@vueuse/core';
-  import { computed, reactive, ref, watch } from 'vue';
+  import { useEventListener, useMouse } from '@vueuse/core';
+  import { reactive, ref, watch } from 'vue';
 
   const props = defineProps<{
     dragging: boolean;
   }>();
 
-  const startDraggingPosition = reactive({
-    x: 0,
-    y: 0,
-  });
-
   const style = reactive({
-    left: 0,
-    top: 0,
+    left: 125,
+    top: 125,
     width: 800,
     height: 500,
   });
@@ -52,6 +42,8 @@
     }
 
     if (drag.value.w) {
+      // TODO: this will start to move body if the element cant shrink
+
       const delta = x - style.left;
       style.width -= delta;
 
@@ -87,33 +79,24 @@
 
 <template>
   <div class="main" :style="style">
-    <div @mousedown="click({ n: true, w: true })" class="b nw"></div>
-    <div @mousedown="click({ n: true })" class="b n"></div>
-    <div @mousedown="click({ n: true, e: true })" class="b ne"></div>
-    <div @mousedown="click({ w: true })" class="b w"></div>
-    <div class="center"><slot></slot></div>
-    <div @mousedown="click({ e: true })" class="b e"></div>
-    <div @mousedown="click({ s: true, w: true })" class="b sw"></div>
-    <div @mousedown="click({ s: true })" class="b s"></div>
-    <div @mousedown="click({ s: true, e: true })" class="b se"></div>
+    <div @mousedown="click({ n: true, w: true })" class="nw"></div>
+    <div @mousedown="click({ n: true })" class="n"></div>
+    <div @mousedown="click({ n: true, e: true })" class="ne"></div>
+    <div @mousedown="click({ w: true })" class="w"></div>
+    <slot></slot>
+    <div @mousedown="click({ e: true })" class="e"></div>
+    <div @mousedown="click({ s: true, w: true })" class="sw"></div>
+    <div @mousedown="click({ s: true })" class="s"></div>
+    <div @mousedown="click({ s: true, e: true })" class="se"></div>
   </div>
 </template>
 
 <style scoped>
   .main {
-    --size: 6px;
     display: grid;
     position: absolute;
     grid-template-columns: 6px 1fr 6px;
     grid-template-rows: 6px 1fr 6px;
-  }
-
-  .center {
-    flex: 1;
-  }
-
-  .main .b {
-    flex: 0;
   }
 
   .e {

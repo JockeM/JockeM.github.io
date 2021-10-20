@@ -1,22 +1,22 @@
 <script setup lang="ts">
   import { useEventListener, useMousePressed } from '@vueuse/core';
-  import { ref, watch } from 'vue';
+  import { ref } from 'vue';
   import ResizableWrapper from './ResizableWrapper.vue';
   import TerminalContent from './TerminalContent.vue';
 
   const dragging = ref(false);
   useEventListener('mouseup', () => (dragging.value = false));
   useEventListener('dragend', () => (dragging.value = false));
+
+  const onMouseDown = (_: Event) => {
+    dragging.value = true;
+  };
 </script>
 
 <template>
   <ResizableWrapper :dragging="dragging" class="wrapper">
     <div class="terminal">
-      <header
-        class="header"
-        @mousedown="dragging = true"
-        ref="draggableElement"
-      >
+      <header class="header" @mousedown="onMouseDown" ref="draggableElement">
         <div class="tabs">
           <div class="tabs-prefix-before"></div>
           <div class="tab">
@@ -27,8 +27,8 @@
           <div class="tabs-prefix-after"></div>
         </div>
         <div class="tab-actions">
-          <button>+</button>
-          <button>v</button>
+          <button>&#xF8AA</button>
+          <button>&#xE70D</button>
         </div>
         <div class="space"></div>
         <div class="window-actions">
@@ -122,6 +122,8 @@
   .tab-actions > button {
     width: 32px;
     color: rgb(180, 180, 180);
+    font-family: 'Segoe MDL2 Assets', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12;
   }
 
   .tab-actions > button:first-of-type {

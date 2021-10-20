@@ -1,6 +1,8 @@
+<script lang="ts" setup></script>
+
 <template>
   <div class="content">
-    <p class="blue b">Hello world</p>
+    <p class="red">This is just a random project :)</p>
   </div>
 </template>
 
@@ -32,7 +34,14 @@
     --terminal-button-selected: #5c5c5c;
   }
 
+  @font-face {
+    font-family: Caskaydia;
+    src: url('../assets/Caskaydia Cove Nerd Font Complete.ttf');
+  }
+
   .content {
+    font-family: Caskaydia, monospace;
+    font-size: 16;
     padding: 0.5rem;
     text-align: left;
     color: #f8f8f2;

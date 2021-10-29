@@ -2,7 +2,14 @@
 
 <template>
   <div class="content">
-    <p class="red">This is just a random project :)</p>
+    <p class="purple">Links</p>
+    <p class="yellow"><a href="https://github.com/JockeM">github &#xf09b</a></p>
+    <p class="yellow">
+      <a href="https://www.linkedin.com/in/joakim-malmberg-b494311a9/"
+        >linkedin &#xf08c</a
+      >
+    </p>
+    <p class="white">Very wip...</p>
   </div>
 </template>
 
@@ -42,11 +49,22 @@
   .content {
     font-family: Caskaydia, monospace;
     font-size: 16;
+    line-height: 1.1;
     padding: 0.5rem;
     text-align: left;
     color: #f8f8f2;
 
     --forground: var(--white);
+  }
+
+  a {
+    font-style: none;
+    text-decoration: none;
+    color: var(--yellow);
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 
   span {
@@ -57,6 +75,11 @@
   .red {
     color: var(--red);
     --forground: var(--red);
+  }
+
+  .yellow {
+    color: var(--yellow);
+    --forground: var(--yellow);
   }
 
   .blue {
